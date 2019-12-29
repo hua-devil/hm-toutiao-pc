@@ -19,7 +19,9 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道：">
-          <el-select v-model="filterParams.channel_id"
+          <!-- <my-channel :value="filterParams.channel_id" @input="filterParams.channel_id=$event"></my-channel> -->
+          <my-channel v-model="filterParams.channel_id"></my-channel>
+          <!-- <el-select v-model="filterParams.channel_id"
           @change="changeChannel"
           clearable
           placeholder="请选择">
@@ -29,7 +31,7 @@
               :label="item.name"
               :value="item.id">
             </el-option>
-          </el-select>
+          </el-select> -->
         </el-form-item>
         <el-form-item label="日期：">
           <el-date-picker
@@ -50,7 +52,7 @@
     <!-- 筛选结果区域 -->
     <el-card>
       <div slot="header">
-        根据筛选条件供查询到0条结果：
+        根据筛选条件供查询到{{total}}条结果：
       </div>
       <el-table :data="articles">
         <el-table-column label="封面">
@@ -110,7 +112,7 @@ export default {
         per_page: 20
         // 频道选项
       },
-      channelOptions: [],
+      // channelOptions: [],
       // 日期选择后得数组[其实日期，结束日期]
       dateArr: [],
       articles: [],
@@ -118,7 +120,7 @@ export default {
     }
   },
   created () {
-    this.getChannelOptions()
+    // this.getChannelOptions()
     this.getArticles()
   },
   methods: {
@@ -137,21 +139,25 @@ export default {
         this.$message.error('删除失败')
       }
     },
-    // 获取频道的选项数据
-    async getChannelOptions () {
-      // 原始数据 res = {data: {message:'',data: {channels:[]}}}
-      // 按照 结构 去解构赋值。
-      // await this.$http.get('channels')  返回值  res
-      const { data: { data } } = await this.$http.get('channels')
-      this.channelOptions = data.channels
-      // console.log(this.channelOptions)
-    },
+    // // 获取频道的选项数据
+    // async getChannelOptions () {
+    //   // 原始数据 res = {data: {message:'',data: {channels:[]}}}
+    //   // 按照 结构 去解构赋值。
+    //   // await this.$http.get('channels')  返回值  res
+    //   const { data: { data } } = await this.$http.get('channels')
+    //   this.channelOptions = data.channels
+    //   // console.log(this.channelOptions)
+    // },
     // 获取文章列表数据
     async getArticles () {
       // 如果是post传参  放到请求主体提交body  axios.post(url, 请求体传参)
       // 如果是get传参  放到请求的地址？后面   axios.get(url, {params: 传参对象})
       const { data: { data } } = await this.$http.get('articles', { params: this.filterParams })
       this.articles = data.results
+      // 测试id是否转换成功
+      // console.log(this.articles[0].id.toString())
+      // 总条数
+      this.total = data.total_count
     },
     // 改变分页
     changePager (newPage) {
@@ -175,10 +181,10 @@ export default {
         this.filterParams.begin_pubdate = null
         this.filterParams.end_pubdate = null
       }
-    },
-    changeChannel () {
-      if (this.filterParams.channel_id === '') this.filterParams.channel_id = null
     }
+    // changeChannel () {
+    //   if (this.filterParams.channel_id === '') this.filterParams.channel_id = null
+    // }
   }
 }
 </script>
